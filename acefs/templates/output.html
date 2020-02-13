@@ -1,0 +1,110 @@
+{% load acefs_extras %}
+{% load flatblock_tags %}
+
+<div class="inner_column" style="width: 200px;">
+
+    <p class="tip" title="{% flatblock 'output.bonus_threshold.help' 3600 %}">
+        {% flatblock 'output.bonus_threshold.label' 3600 %}
+    </p>
+    <p class="big_num tip" title="{% flatblock 'output.bonus_threshold.help' 3600 %}">{{ model.bonus_threshold|currency }}</p>
+
+</div>
+
+<div class="inner_column" style="width: 240px;">
+
+    <p class="tip" title="{% flatblock 'output.max_slotted_bonus.help' 3600 %}">
+        {% flatblock 'output.max_slotted_bonus.label' 3600 %}
+    </p>
+    <p class="big_num tip" title="{% flatblock 'output.max_slotted_bonus.help' 3600 %}">{{ model.max_slotted_bonus|currency }}</p>
+
+</div>
+
+<div class="inner_column" style="width: 240px;">
+
+    <p>
+        {% flatblock 'output.best_path.label' 3600 %}
+    </p>
+    {% if model.play_ball %}
+        <p class="big_num green">{% flatblock 'output.best_path.baseball' 3600 %}</p>
+    {% else %}
+        <p class="big_num red">{% flatblock 'output.best_path.alternate' 3600 %}</p>
+    {% endif %}
+
+</div>
+
+
+<div class="inner_column career" style="width: 240px;">
+
+    <p class="tip" title="{% flatblock 'output.mlb_avg.help' 3600 %}">{% flatblock 'output.mlb_avg.label' 3600 %} <b>{{  model.MLBAverage }}</b></p>
+    <p class="tip" title="{% flatblock 'output.milb_avg.help' 3600 %}">{% flatblock 'output.milb_avg.label' 3600 %} <b>{{  model.MiLBAverage }}</b></p>
+    <p class="tip" title="{% flatblock 'output.pr_mlb.help' 3600 %}">{% flatblock 'output.pr_mlb.label' 3600 %} <b>{{  model.pr_mlb|percentage }}</b></p>
+
+</div>
+
+<div class="clear"></div>
+
+<div class="wide_column">
+
+    <div id="chart_title">{% flatblock 'output.chart.title' 3600 %}</div>
+    <div id="chart" style="height:350px; width:700px;" class="tip" title="{% flatblock 'output.chart.help' 3600 %}"></div>
+    <p class="note"><i>{% flatblock 'output.chart.note' 3600 %}</i></p>
+
+</div>
+
+<div class="skinny_column">
+    <table>
+        <thead>
+            <tr>
+                <th>{% flatblock 'output.table.year.label' 3600%}</th>
+                <th class="tip" title="{% flatblock 'output.table.pr_minors.help' 3600 %}">{% flatblock 'output.table.pr_minors.label' 3600 %}</th>
+                <th class="tip" title="{% flatblock 'output.table.pr_out.help' 3600 %}">{% flatblock 'output.table.pr_out.label' 3600 %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in table %}
+            <tr class="{% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
+                <td>{{ row.year }}</td>
+                <td>{{ row.pr_minors|percentage }}</td>
+                <td>{{ row.pr_out|percentage }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+<div class="clear"></div>
+
+
+<script type="text/javascript">
+
+    function render_plot(){
+
+        $('.tip').tooltip();
+
+        $.plot(('#chart'), {{ graph|safe }}, {
+
+            series: {
+                lines: { show:  true },
+                points: { show: true }
+            },
+            xaxis: {
+                label: 'Years',
+                ticks: {{  years }},
+                tickFormatter: function numberWithCommas(x) {
+                    return x.toString();
+                }
+            },
+            yaxis: {
+                label: 'Salary',
+                tickFormatter: function numberWithCommas(x) {
+                    return '$' + x.toString().replace(/\B(?=(?:\d{3})+(?!\d))/g, ",");
+                }
+            }
+
+        });
+
+    }
+
+
+</script>

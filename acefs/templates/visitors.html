@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block header_style %}
+
+    <style type="text/css">
+
+        #visitor {
+            color: #000;
+        }
+
+        #visitor table {
+            color: #333;
+            font-size: 11px;
+            border-collapse: collapse;
+            border-spacing: 0px;
+        }
+
+        #visitor th {
+            text-align: left;
+            color: #666;
+            border-bottom: 1px solid #999;
+            margin-bottom: 5px;
+        }
+
+        #visitor tr:hover {
+            background-color: #ff6;
+            cursor: pointer;
+        }
+
+        #visitor td {
+            padding: 2px 0px 2px 5px;
+        }
+
+        #visitor td.count {
+            text-align: right;
+        }
+
+        #sidebar {
+            font-size: 11px;
+            width: 250px;
+            float: left;
+            margin-right: 20px;
+        }
+
+        #details {
+            width: 670px;
+            float: left;
+        }
+
+        .clear {
+            clear: both;
+        }
+
+        #txt_search {
+            font-size: 14px;
+        }
+        
+        #btn_search {
+            font-size: 10px;
+            width: 60px;
+            height: 22px;
+        }
+
+        #details td {
+            border-bottom: 1px solid #CCC;
+        }
+
+        tr.selected_row td {
+            background-color: #6f6;
+        }
+
+        p.tech {
+            font-size: 10px;
+            color: #999;
+        }
+
+    </style>
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}/js/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}/js/flot/excanvas.min.js"></script>
+    <script type="text/javascript" src="{{ MEDIA_URL }}/js/flot/jquery.flot.min.js"></script>
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}/js/jquery.tooltip.min.js"></script>
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}/js/chosen.jquery.min.js"></script>
+
+    <script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#sidebar').load('/visitor_list/1');
+
+        $('#sidebar tr').live('click', function (e) {
+
+            $('#sidebar tr').removeClass('selected_row');
+            $(this).addClass('selected_row');
+
+            var id = $(this).find('span.visitor_id').html();
+            $('#details').load('/visitor_detail/' + id);
+
+        });
+
+        $('#sidebar a').live('click', function(e) {
+
+            e.preventDefault();
+            $('#sidebar').load($(this).attr('href'));
+
+        });
+
+        $('#btn_search').live('click', function(e) {
+
+            var term = $('#txt_search').val();
+            $('#sidebar').load('/visitor_list/1?term=' + term);
+
+        });
+
+        $('tr.scenario_row').live('click', function () {
+
+            $('#details tr.scenario_row').removeClass('selected_row');
+            $(this).addClass('selected_row');
+
+            var params = {
+                college: $(this).attr('val_college'),
+                alt: $(this).attr('val_alt'),
+                sec: $(this).attr('val_sec'),
+                pick: $(this).attr('val_pick'),
+                pos: $(this).attr('val_pos'),
+                status: $(this).attr('val_status')
+            };
+
+            $('div#output_placeholder').slideUp('fast');
+            $('div#output_placeholder').html('');
+            $('div#throbber').slideDown('fast');
+            $('div#output_placeholder').load('/output?skip_log=YES', params, function() {
+
+                $('div#throbber').slideUp('fast');
+                $('div#output_placeholder').slideDown('fast', function () {
+                    render_plot();
+                });
+            });
+        });
+
+    });
+
+    </script>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="app" id="visitor">
+
+    <div id="sidebar">
+
+
+    </div>
+
+    <div id="details">
+
+
+    </div>
+
+    <div class="clear"></div>
+
+</div>
+
+<div class="app" id="app_output">
+    <div id="throbber" style="display: none;"><img src="{{  MEDIA_URL }}/images/red_throbber.gif" /></div>
+    <div id="output_placeholder" style="display: none;"></div>
+</div>
+    
+{% endblock content %}

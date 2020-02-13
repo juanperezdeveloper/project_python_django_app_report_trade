@@ -1,0 +1,31 @@
+<p>
+    <input id="txt_search" type="text" value="{{ term }}" /> <button id="btn_search">Search</button>
+    <br>(<a href="/visitor_list/1">Clear Search</a>)
+</p>
+
+
+<p>
+    Page {{ page.number }} of {{ page.paginator.num_pages }}
+    {% if page.has_previous %}<a href="/visitor_list/{{ page.previous_page_number }}">Previous</a>{% endif %}
+    {% if page.has_next %}<a href="/visitor_list/{{ page.next_page_number }}">Next</a>{% endif %}
+</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Full Name</th>
+            <th>Scenarios</th>
+        </tr>
+    </thead>
+    {% for v in page.object_list %}
+    <tbody>
+        <tr>
+            <td class="count"><span class="visitor_id">{{ v.id }}</span></td>
+            <td>{{ v.fullname }}</td>
+            <td class="count">{{ v.num_scenarios }}</td>
+        </tr>
+    </tbody>
+    {% endfor %}
+
+</table>

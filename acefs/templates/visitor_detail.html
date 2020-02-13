@@ -1,0 +1,51 @@
+<h3>{{ visitor.fullname }}</h3>
+
+<p>
+    ModX: {{ visitor.username }},
+        {% if visitor.modx_id %}
+        <a href="http://mldraft.com/manager/index.php?a=34&id={{ visitor.modx_id }}">Profile</a>
+    {% else %}
+        Profile Not Available
+    {% endif %}
+</p>
+
+<p class="tech">
+    {{ visitor.ip }}
+    <br/>{{ visitor.user_agent }}
+</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Timestamp</th>
+            <th>College</th>
+            <th>Careers</th>
+            <th>Pick</th>
+            <th>Position</th>
+            <th>Status</th>
+            <th>Trial</<th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for s in visitor.scenario_set.all %}
+        <tr class="scenario_row"
+            val_college="{{ s.college.id }}"
+            val_alt="{{ s.alt.id }}"
+            val_sec="{{ s.sec.id }}"
+            val_pick="{{ s.pick }}"
+            val_pos="{{ s.pos }}"
+            val_status="{{ s.status }}"
+            val_anonymous="{{ s.anonymous }}"
+            >
+            <td>{{ s.timestamp }}</td>
+            <td>{{ s.college }}</td>
+            <td><i>alt</i> {{ s.alt }}
+                <br/><i>sec</i> {{ s.sec }}</td>
+            <td>{{ s.get_draft_cell }}</td>
+            <td>{{ s.get_position }}</td>
+            <td>{{ s.get_status }} / {{ s.status }}</td>
+            <td>{% if  s.anonymous  %}Trial{% else %}Paid{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

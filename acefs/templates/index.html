@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load flatblock_tags %}
+
+{% block content %}
+    
+<div class="app" id="app_input">
+
+    <label title="{% flatblock 'input.pick.help' 3600 %}">
+        {% flatblock 'input.pick.label' 3600 %}
+    </label>
+
+    <div class="select_container">
+        <select id="pick_select" name="pick">
+            <option value="1">1st Overall</option>
+            <option value="2">2nd Overall</option>
+            <option value="3">3rd Overall</option>
+            <option value="4">4th Overall</option>
+            <option value="5">5th Overall</option>
+            <option value="6">6th - 10th Overall</option>
+            <option value="7">11th - 15th Overall</option>
+            <option value="8">16th - 20th Overall</option>
+            <option value="9">End of 1st Round</option>
+            <option value="10">Beg of 2nd Round</option>
+            <option value="11">End of 2nd Round</option>
+            <option value="12">3rd Round </option>
+            <option value="13">4th Round </option>
+            <option value="14">5th Round </option>
+            <option value="15">6th Round </option>
+            <option value="16">7th Round </option>
+            <option value="17">8th Round </option>
+            <option value="18">9th Round </option>
+            <option value="19">10th Round</option>
+            <option value="20">11th - 15th Round </option>
+            <option value="21">16th - 20th Round </option>
+            <option value="22">21st - 25th Round </option>
+            <option value="23">26th - 30th Round </option>
+            <option value="24">31st - 35th Round </option>
+            <option value="25">36th - 40th Round </option>
+            <option value="26">41st Round +</option>
+        </select>
+    </div>
+
+    <label title="{% flatblock 'input.position.help' 3600 %}">
+        {% flatblock 'input.position.label' 3600 %}
+    </label>
+
+    <div class="select_container">
+        <select id="pos_select" name="pos">
+            {% for p in positions %}
+            <option value="{{ p.index }}" {% if p.text = 'ALL' %}selected{% endif %}>{{ p.text }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <label title="{% flatblock 'input.status.help' 3600 %}">
+        {% flatblock 'input.status.label' 3600 %}
+    </label>
+
+    <div class="select_container">
+        <select id="status_select" name="status">
+            {% for s in statuses %}
+            <option value="{{ s.index }}">{{ s.text }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="clear"></div>
+
+    <div class="toprow">
+
+        <label class="big" title="{% flatblock 'input.college.help' 3600 %}">
+            {% flatblock 'input.college.label' 3600  %}
+        </label>
+
+        <label class="big" title="{% flatblock 'input.alt.help' 3600 %}">
+            {% flatblock 'input.alt.label' 3600 %}
+        </label>
+
+        <label class="big" title="{% flatblock 'input.sec.help' 3600 %}">
+            {% flatblock 'input.sec.label' 3600 %}
+        </label>
+    
+        <div class="clear"></div>
+
+        <div class="select_container" style="z-index: 1000;">
+            <select id="college_select" name="college" class="chzn">
+                {% for c in colleges %}
+                <option value="{{ c.id }}" {% if c.school = '[DEFAULT]' %}selected{% endif %}>{{ c.school }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="select_container"  style="z-index: 999;">
+            <select id="alt_select" name="alt" class="chzn">
+                {% for o in occupations %}
+                <option value="{{ o.id }}" {% if o.occupation = '[DEFAULT] All Occupations' %}selected{% endif %} >{{ o.occupation }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="select_container"  style="z-index: 998;">
+            <select id="sec_select" name="sec" class="chzn">
+                {% for o in occupations %}
+                <option value="{{ o.id }}" {% if o.occupation = '[DEFAULT] All Occupations' %}selected{% endif %} >{{ o.occupation }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+    </div>
+
+    <div class="clear"></div>
+
+    <div id="help_text">
+        {% flatblock 'input.help' 3600 %}
+    </div>
+
+    <div id="button_container">
+        <button id="go">
+            {% flatblock 'go.label' 3600 %}
+        </button>
+    </div>
+
+    <div class="clear"></div>
+
+</div>
+
+
+<div class="app" id="app_output">
+
+    <p id="instructions">{% flatblock 'output.placeholder' 3600 %}</p>
+
+    <div id="throbber" style="display: none;"><img src="{{  MEDIA_URL }}/images/red_throbber.gif" /></div>
+
+    <div id="consistency_warning" style="display: none;">{% flatblock 'output.changed' 3600 %}</div>
+
+    <div id="output_placeholder" style="display: none;">
+
+        <!-- OUTPUT GOES HERE -->
+
+    </div>
+
+</div>
+
+<script type="text/javascript" src="{{ MEDIA_URL }}/js/jquery-1.4.2.min.js"></script>
+
+<script type="text/javascript" src="{{ MEDIA_URL }}/js/flot/excanvas.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}/js/flot/jquery.flot.min.js"></script>
+
+<script type="text/javascript" src="{{ MEDIA_URL }}/js/jquery.tooltip.min.js"></script>
+
+<script type="text/javascript" src="{{ MEDIA_URL }}/js/chosen.jquery.min.js"></script>
+
+<script type="text/javascript" src="{{ MEDIA_URL }}/js/jquery.cookie-modified.js"></script>
+
+
+<script type="text/javascript">
+
+
+$(document).ready(function(){
+
+    if ($.cookie('college')) { $('#college_select').val($.cookie('college')); }
+    if ($.cookie('alt')) { $('#alt_select').val($.cookie('alt')); }
+    if ($.cookie('sec')) { $('#sec_select').val($.cookie('sec')); }
+    if ($.cookie('pick')) { $('#pick_select').val($.cookie('pick')); }
+    if ($.cookie('pos')) { $('#pos_select').val($.cookie('pos')); }
+    if ($.cookie('status')) { $('#status_select').val($.cookie('status')); }
+
+    $("select").tooltip();
+    $("label").tooltip();
+
+    $('.chzn').chosen();
+
+    $("select").change(function () {
+        if ($('div#output_placeholder').css("display") != 'none') {
+            $('div#consistency_warning').slideDown();
+        }
+    });
+
+    $('button#go').click(function () {
+
+        var params = {
+            college: $('#college_select').val(),
+            alt: $('#alt_select').val(),
+            sec: $('#sec_select').val(),
+            pick: $('#pick_select').val(),
+            pos: $('#pos_select').val(),
+            status: $('#status_select').val()
+        };
+
+        $.cookie(params, {'expires':360});
+
+        $('div#consistency_warning').hide();
+        $('div#output_placeholder').slideUp('fast');
+        $('div#output_placeholder').html('');
+        $('div#throbber').slideDown('fast');
+        $('div#output_placeholder').load('/output', params, function() {
+
+            $('div#throbber').slideUp('fast');
+            $('p#instructions').slideUp('fast');
+            $('div#output_placeholder').slideDown('fast', function () {
+                render_plot();
+            });
+        });
+
+    });
+
+});
+
+</script>
+
+{% endblock %}
